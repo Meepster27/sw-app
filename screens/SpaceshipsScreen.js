@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -14,9 +14,11 @@ export default function SpaceshipsScreen() {
   const [nextUrl, setNextUrl] = useState(API_URL);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const loadingRef = useRef(false);
 
   const fetchShips = useCallback(async (url) => {
-    if (!url || loading) return;
+    if (!url || loadingRef.current) return;
+    loadingRef.current = true;
     setLoading(true);
     try {
       const response = await fetch(url);
@@ -27,13 +29,14 @@ export default function SpaceshipsScreen() {
     } catch (err) {
       setError(err.message);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
-  }, [loading]);
+  }, []);
 
   useEffect(() => {
     fetchShips(API_URL);
-  }, []);
+  }, [fetchShips]);
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
