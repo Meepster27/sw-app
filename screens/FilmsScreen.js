@@ -13,7 +13,7 @@ import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
 
 const HERO_URI =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Milky_Way_infrared.jpg/1280px-Milky_Way_infrared.jpg';
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg/800px-Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg';
 
 const BLURHASH = 'L03~Wt00IU~q00~q%M%M_3D%WB-;';
 

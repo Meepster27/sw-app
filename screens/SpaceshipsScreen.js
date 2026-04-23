@@ -13,7 +13,7 @@ import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
 
 const HERO_URI =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Space_Shuttle_Columbia_launching.jpg/800px-Space_Shuttle_Columbia_launching.jpg';
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ISS_February_2010.jpg/1280px-ISS_February_2010.jpg';
 
 const BLURHASH = 'L03~Wt00IU~q00~q%M%M_3D%WB-;';
 
