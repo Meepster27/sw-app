@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  FlatList,
+  ScrollView,
   ActivityIndicator,
   StyleSheet,
   TextInput,
   Modal,
   TouchableOpacity,
 } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const API_URL = 'https://swapi.info/api/starships';
 
@@ -19,12 +20,25 @@ export default function SpaceshipsScreen() {
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [submittedText, setSubmittedText] = useState('');
+  const [swipeModalVisible, setSwipeModalVisible] = useState(false);
+  const [swipeItemText, setSwipeItemText] = useState('');
 
   const handleSearch = () => {
     if (searchText.trim() === '') return;
     setSubmittedText(searchText.trim());
     setModalVisible(true);
   };
+
+  const handleSwipe = (name) => {
+    setSwipeItemText(name);
+    setSwipeModalVisible(true);
+  };
+
+  const renderRightAction = () => (
+    <View style={styles.swipeAction}>
+      <Text style={styles.swipeActionText}>View</Text>
+    </View>
+  );
 
   useEffect(() => {
     fetch(API_URL)
@@ -37,31 +51,37 @@ export default function SpaceshipsScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.model}>{item.model}</Text>
-      <View style={styles.row}>
-        <Text style={styles.label}>Class</Text>
-        <Text style={styles.value}>{item.starship_class}</Text>
+  const renderItem = (item) => (
+    <Swipeable
+      key={item.url}
+      renderRightActions={renderRightAction}
+      onSwipeableOpen={() => handleSwipe(item.name)}
+    >
+      <View style={styles.card}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.model}>{item.model}</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Class</Text>
+          <Text style={styles.value}>{item.starship_class}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Manufacturer</Text>
+          <Text style={styles.value}>{item.manufacturer}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Crew</Text>
+          <Text style={styles.value}>{item.crew}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Passengers</Text>
+          <Text style={styles.value}>{item.passengers}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Hyperdrive</Text>
+          <Text style={styles.value}>{item.hyperdrive_rating}</Text>
+        </View>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Manufacturer</Text>
-        <Text style={styles.value}>{item.manufacturer}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Crew</Text>
-        <Text style={styles.value}>{item.crew}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Passengers</Text>
-        <Text style={styles.value}>{item.passengers}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Hyperdrive</Text>
-        <Text style={styles.value}>{item.hyperdrive_rating}</Text>
-      </View>
-    </View>
+    </Swipeable>
   );
 
   if (loading) {
@@ -118,12 +138,29 @@ export default function SpaceshipsScreen() {
         </View>
       </Modal>
 
-      <FlatList
-        data={ships}
-        keyExtractor={(item) => item.url}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-      />
+      <Modal
+        transparent
+        animationType="fade"
+        visible={swipeModalVisible}
+        onRequestClose={() => setSwipeModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Spaceship</Text>
+            <Text style={styles.modalBody}>{swipeItemText}</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setSwipeModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <ScrollView contentContainerStyle={styles.list}>
+        {ships.map((item) => renderItem(item))}
+      </ScrollView>
     </View>
   );
 }
@@ -181,6 +218,19 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#ccc',
     marginTop: 10,
+    fontSize: 14,
+  },
+  swipeAction: {
+    backgroundColor: '#e63946',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
+  swipeActionText: {
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 14,
   },
   errorText: {

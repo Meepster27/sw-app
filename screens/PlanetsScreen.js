@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  FlatList,
+  ScrollView,
   ActivityIndicator,
   StyleSheet,
   TextInput,
   Modal,
   TouchableOpacity,
 } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const API_URL = 'https://swapi.info/api/planets';
 
@@ -19,12 +20,25 @@ export default function PlanetsScreen() {
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [submittedText, setSubmittedText] = useState('');
+  const [swipeModalVisible, setSwipeModalVisible] = useState(false);
+  const [swipeItemText, setSwipeItemText] = useState('');
 
   const handleSearch = () => {
     if (searchText.trim() === '') return;
     setSubmittedText(searchText.trim());
     setModalVisible(true);
   };
+
+  const handleSwipe = (name) => {
+    setSwipeItemText(name);
+    setSwipeModalVisible(true);
+  };
+
+  const renderRightAction = (name) => (
+    <View style={styles.swipeAction}>
+      <Text style={styles.swipeActionText}>View</Text>
+    </View>
+  );
 
   useEffect(() => {
     fetch(API_URL)
@@ -37,30 +51,36 @@ export default function PlanetsScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.name}>{item.name}</Text>
-      <View style={styles.row}>
-        <Text style={styles.label}>Climate</Text>
-        <Text style={styles.value}>{item.climate}</Text>
+  const renderItem = (item) => (
+    <Swipeable
+      key={item.url}
+      renderRightActions={() => renderRightAction(item.name)}
+      onSwipeableOpen={() => handleSwipe(item.name)}
+    >
+      <View style={styles.card}>
+        <Text style={styles.name}>{item.name}</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Climate</Text>
+          <Text style={styles.value}>{item.climate}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Terrain</Text>
+          <Text style={styles.value}>{item.terrain}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Diameter</Text>
+          <Text style={styles.value}>{item.diameter} km</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Gravity</Text>
+          <Text style={styles.value}>{item.gravity}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Population</Text>
+          <Text style={styles.value}>{item.population}</Text>
+        </View>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Terrain</Text>
-        <Text style={styles.value}>{item.terrain}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Diameter</Text>
-        <Text style={styles.value}>{item.diameter} km</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Gravity</Text>
-        <Text style={styles.value}>{item.gravity}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Population</Text>
-        <Text style={styles.value}>{item.population}</Text>
-      </View>
-    </View>
+    </Swipeable>
   );
 
   if (loading) {
@@ -117,12 +137,29 @@ export default function PlanetsScreen() {
         </View>
       </Modal>
 
-      <FlatList
-        data={planets}
-        keyExtractor={(item) => item.url}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-      />
+      <Modal
+        transparent
+        animationType="fade"
+        visible={swipeModalVisible}
+        onRequestClose={() => setSwipeModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Planet</Text>
+            <Text style={styles.modalBody}>{swipeItemText}</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setSwipeModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <ScrollView contentContainerStyle={styles.list}>
+        {planets.map((item) => renderItem(item))}
+      </ScrollView>
     </View>
   );
 }
@@ -174,6 +211,19 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#ccc',
     marginTop: 10,
+    fontSize: 14,
+  },
+  swipeAction: {
+    backgroundColor: '#e63946',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
+  swipeActionText: {
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 14,
   },
   errorText: {

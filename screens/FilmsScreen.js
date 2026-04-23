@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  FlatList,
+  ScrollView,
   ActivityIndicator,
   StyleSheet,
   TextInput,
   Modal,
   TouchableOpacity,
 } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const API_URL = 'https://swapi.info/api/films';
 
@@ -19,12 +20,25 @@ export default function FilmsScreen() {
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [submittedText, setSubmittedText] = useState('');
+  const [swipeModalVisible, setSwipeModalVisible] = useState(false);
+  const [swipeItemText, setSwipeItemText] = useState('');
 
   const handleSearch = () => {
     if (searchText.trim() === '') return;
     setSubmittedText(searchText.trim());
     setModalVisible(true);
   };
+
+  const handleSwipe = (title) => {
+    setSwipeItemText(title);
+    setSwipeModalVisible(true);
+  };
+
+  const renderRightAction = () => (
+    <View style={styles.swipeAction}>
+      <Text style={styles.swipeActionText}>View</Text>
+    </View>
+  );
 
   useEffect(() => {
     fetch(API_URL)
@@ -40,26 +54,32 @@ export default function FilmsScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.episode}>Episode {item.episode_id}</Text>
-      <Text style={styles.name}>{item.title}</Text>
-      <View style={styles.row}>
-        <Text style={styles.label}>Director</Text>
-        <Text style={styles.value}>{item.director}</Text>
+  const renderItem = (item) => (
+    <Swipeable
+      key={item.url}
+      renderRightActions={renderRightAction}
+      onSwipeableOpen={() => handleSwipe(item.title)}
+    >
+      <View style={styles.card}>
+        <Text style={styles.episode}>Episode {item.episode_id}</Text>
+        <Text style={styles.name}>{item.title}</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Director</Text>
+          <Text style={styles.value}>{item.director}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Producer</Text>
+          <Text style={styles.value}>{item.producer}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Released</Text>
+          <Text style={styles.value}>{item.release_date}</Text>
+        </View>
+        <Text style={styles.crawl} numberOfLines={3}>
+          {item.opening_crawl.replace(/\r\n/g, ' ')}
+        </Text>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Producer</Text>
-        <Text style={styles.value}>{item.producer}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Released</Text>
-        <Text style={styles.value}>{item.release_date}</Text>
-      </View>
-      <Text style={styles.crawl} numberOfLines={3}>
-        {item.opening_crawl.replace(/\r\n/g, ' ')}
-      </Text>
-    </View>
+    </Swipeable>
   );
 
   if (loading) {
@@ -116,12 +136,29 @@ export default function FilmsScreen() {
         </View>
       </Modal>
 
-      <FlatList
-        data={films}
-        keyExtractor={(item) => item.url}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-      />
+      <Modal
+        transparent
+        animationType="fade"
+        visible={swipeModalVisible}
+        onRequestClose={() => setSwipeModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Film</Text>
+            <Text style={styles.modalBody}>{swipeItemText}</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setSwipeModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <ScrollView contentContainerStyle={styles.list}>
+        {films.map((item) => renderItem(item))}
+      </ScrollView>
     </View>
   );
 }
@@ -188,6 +225,19 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#ccc',
     marginTop: 10,
+    fontSize: 14,
+  },
+  swipeAction: {
+    backgroundColor: '#e63946',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
+  swipeActionText: {
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 14,
   },
   errorText: {
