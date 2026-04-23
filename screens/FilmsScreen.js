@@ -34,8 +34,21 @@ export default function FilmsScreen() {
     <View style={styles.card}>
       <Text style={styles.episode}>Episode {item.episode_id}</Text>
       <Text style={styles.name}>{item.title}</Text>
-      <Text style={styles.detail}>Director: {item.director}</Text>
-      <Text style={styles.detail}>Released: {item.release_date}</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>Director</Text>
+        <Text style={styles.value}>{item.director}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Producer</Text>
+        <Text style={styles.value}>{item.producer}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Released</Text>
+        <Text style={styles.value}>{item.release_date}</Text>
+      </View>
+      <Text style={styles.crawl} numberOfLines={3}>
+        {item.opening_crawl.replace(/\r\n/g, ' ')}
+      </Text>
     </View>
   );
 
@@ -43,6 +56,7 @@ export default function FilmsScreen() {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#FFE81F" />
+        <Text style={styles.loadingText}>Loading Films...</Text>
       </View>
     );
   }
@@ -98,15 +112,38 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   name: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 4,
+    marginBottom: 8,
   },
-  detail: {
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 3,
+  },
+  label: {
+    fontSize: 13,
+    color: '#888',
+    flex: 1,
+  },
+  value: {
     fontSize: 13,
     color: '#ccc',
-    marginTop: 2,
+    flex: 2,
+    textAlign: 'right',
+  },
+  crawl: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
+    marginTop: 10,
+    lineHeight: 18,
+  },
+  loadingText: {
+    color: '#ccc',
+    marginTop: 10,
+    fontSize: 14,
   },
   errorText: {
     color: '#ff6b6b',

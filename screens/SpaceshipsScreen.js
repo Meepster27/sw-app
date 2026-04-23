@@ -12,7 +12,7 @@ const API_URL = 'https://swapi.dev/api/starships/';
 export default function SpaceshipsScreen() {
   const [ships, setShips] = useState([]);
   const [nextUrl, setNextUrl] = useState(API_URL);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const loadingRef = useRef(false);
 
@@ -41,14 +41,38 @@ export default function SpaceshipsScreen() {
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.detail}>Model: {item.model}</Text>
-      <Text style={styles.detail}>Manufacturer: {item.manufacturer}</Text>
-      <Text style={styles.detail}>Class: {item.starship_class}</Text>
+      <Text style={styles.model}>{item.model}</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>Class</Text>
+        <Text style={styles.value}>{item.starship_class}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Manufacturer</Text>
+        <Text style={styles.value}>{item.manufacturer}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Crew</Text>
+        <Text style={styles.value}>{item.crew}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Passengers</Text>
+        <Text style={styles.value}>{item.passengers}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Hyperdrive</Text>
+        <Text style={styles.value}>{item.hyperdrive_rating}</Text>
+      </View>
     </View>
   );
 
-  const renderFooter = () =>
-    loading ? <ActivityIndicator size="large" color="#FFE81F" style={styles.loader} /> : null;
+  if (loading && ships.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#FFE81F" />
+        <Text style={styles.loadingText}>Loading Spaceships...</Text>
+      </View>
+    );
+  }
 
   if (error) {
     return (
@@ -64,7 +88,11 @@ export default function SpaceshipsScreen() {
         data={ships}
         keyExtractor={(item) => item.url}
         renderItem={renderItem}
-        ListFooterComponent={renderFooter}
+        ListFooterComponent={
+          loading
+            ? () => <ActivityIndicator size="large" color="#FFE81F" style={styles.loader} />
+            : null
+        }
         onEndReached={() => fetchShips(nextUrl)}
         onEndReachedThreshold={0.5}
         contentContainerStyle={styles.list}
@@ -99,15 +127,37 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#FFE81F',
-    marginBottom: 4,
+    marginBottom: 2,
   },
-  detail: {
+  model: {
+    fontSize: 13,
+    color: '#aaa',
+    fontStyle: 'italic',
+    marginBottom: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 3,
+  },
+  label: {
+    fontSize: 13,
+    color: '#888',
+    flex: 1,
+  },
+  value: {
     fontSize: 13,
     color: '#ccc',
-    marginTop: 2,
+    flex: 2,
+    textAlign: 'right',
   },
   loader: {
     marginVertical: 16,
+  },
+  loadingText: {
+    color: '#ccc',
+    marginTop: 10,
+    fontSize: 14,
   },
   errorText: {
     color: '#ff6b6b',

@@ -12,7 +12,7 @@ const API_URL = 'https://swapi.dev/api/planets/';
 export default function PlanetsScreen() {
   const [planets, setPlanets] = useState([]);
   const [nextUrl, setNextUrl] = useState(API_URL);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const loadingRef = useRef(false);
 
@@ -41,14 +41,37 @@ export default function PlanetsScreen() {
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.detail}>Climate: {item.climate}</Text>
-      <Text style={styles.detail}>Terrain: {item.terrain}</Text>
-      <Text style={styles.detail}>Population: {item.population}</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>Climate</Text>
+        <Text style={styles.value}>{item.climate}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Terrain</Text>
+        <Text style={styles.value}>{item.terrain}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Diameter</Text>
+        <Text style={styles.value}>{item.diameter} km</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Gravity</Text>
+        <Text style={styles.value}>{item.gravity}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Population</Text>
+        <Text style={styles.value}>{item.population}</Text>
+      </View>
     </View>
   );
 
-  const renderFooter = () =>
-    loading ? <ActivityIndicator size="large" color="#FFE81F" style={styles.loader} /> : null;
+  if (loading && planets.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#FFE81F" />
+        <Text style={styles.loadingText}>Loading Planets...</Text>
+      </View>
+    );
+  }
 
   if (error) {
     return (
@@ -64,7 +87,11 @@ export default function PlanetsScreen() {
         data={planets}
         keyExtractor={(item) => item.url}
         renderItem={renderItem}
-        ListFooterComponent={renderFooter}
+        ListFooterComponent={
+          loading
+            ? () => <ActivityIndicator size="large" color="#FFE81F" style={styles.loader} />
+            : null
+        }
         onEndReached={() => fetchPlanets(nextUrl)}
         onEndReachedThreshold={0.5}
         contentContainerStyle={styles.list}
@@ -99,15 +126,31 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#FFE81F',
-    marginBottom: 4,
+    marginBottom: 8,
   },
-  detail: {
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 3,
+  },
+  label: {
+    fontSize: 13,
+    color: '#888',
+    flex: 1,
+  },
+  value: {
     fontSize: 13,
     color: '#ccc',
-    marginTop: 2,
+    flex: 2,
+    textAlign: 'right',
   },
   loader: {
     marginVertical: 16,
+  },
+  loadingText: {
+    color: '#ccc',
+    marginTop: 10,
+    fontSize: 14,
   },
   errorText: {
     color: '#ff6b6b',
