@@ -5,6 +5,9 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
+  TextInput,
+  Modal,
+  TouchableOpacity,
 } from 'react-native';
 
 const API_URL = 'https://swapi.info/api/films';
@@ -13,6 +16,15 @@ export default function FilmsScreen() {
   const [films, setFilms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [submittedText, setSubmittedText] = useState('');
+
+  const handleSearch = () => {
+    if (searchText.trim() === '') return;
+    setSubmittedText(searchText.trim());
+    setModalVisible(true);
+  };
 
   useEffect(() => {
     fetch(API_URL)
@@ -69,6 +81,41 @@ export default function FilmsScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchBar}>
+        <TextInput
+          style={styles.input}
+          placeholder="Search films..."
+          placeholderTextColor="#666"
+          value={searchText}
+          onChangeText={setSearchText}
+          onSubmitEditing={handleSearch}
+          returnKeyType="search"
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <Text style={styles.searchButtonText}>Search</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Modal
+        transparent
+        animationType="fade"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Search Term</Text>
+            <Text style={styles.modalBody}>{submittedText}</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <FlatList
         data={films}
         keyExtractor={(item) => item.url}
@@ -146,5 +193,73 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#ff6b6b',
     fontSize: 16,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#16213e',
+    borderBottomWidth: 1,
+    borderBottomColor: '#FFE81F',
+  },
+  input: {
+    flex: 1,
+    backgroundColor: '#0f3460',
+    color: '#fff',
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+  },
+  searchButton: {
+    marginLeft: 8,
+    backgroundColor: '#FFE81F',
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    justifyContent: 'center',
+  },
+  searchButtonText: {
+    color: '#1a1a2e',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalBox: {
+    backgroundColor: '#16213e',
+    borderRadius: 10,
+    padding: 24,
+    width: '75%',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FFE81F',
+  },
+  modalTitle: {
+    color: '#FFE81F',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  modalBody: {
+    color: '#fff',
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: '#FFE81F',
+    borderRadius: 6,
+    paddingHorizontal: 32,
+    paddingVertical: 10,
+  },
+  modalButtonText: {
+    color: '#1a1a2e',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
 });
