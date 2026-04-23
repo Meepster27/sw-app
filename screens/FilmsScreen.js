@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-const API_URL = 'https://swapi.dev/api/films/';
+const API_URL = 'https://swapi.info/api/films';
 
 export default function FilmsScreen() {
   const [films, setFilms] = useState([]);
@@ -20,10 +20,8 @@ export default function FilmsScreen() {
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         return res.json();
       })
-      .then((json) => {
-        const sorted = json.results.sort(
-          (a, b) => a.episode_id - b.episode_id
-        );
+      .then((data) => {
+        const sorted = data.sort((a, b) => a.episode_id - b.episode_id);
         setFilms(sorted);
       })
       .catch((err) => setError(err.message))
