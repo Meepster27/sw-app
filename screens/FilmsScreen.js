@@ -9,7 +9,13 @@ import {
   Modal,
   TouchableOpacity,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
+
+const HERO_URI =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Milky_Way_infrared.jpg/1280px-Milky_Way_infrared.jpg';
+
+const BLURHASH = 'L03~Wt00IU~q00~q%M%M_3D%WB-;';
 
 const API_URL = 'https://swapi.info/api/films';
 
@@ -101,6 +107,13 @@ export default function FilmsScreen() {
 
   return (
     <View style={styles.container}>
+      <Image
+        style={styles.heroImage}
+        source={{ uri: HERO_URI }}
+        placeholder={{ blurhash: BLURHASH }}
+        contentFit="cover"
+        transition={400}
+      />
       <View style={styles.searchBar}>
         <TextInput
           style={styles.input}
@@ -243,6 +256,10 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#ff6b6b',
     fontSize: 16,
+  },
+  heroImage: {
+    width: '100%',
+    height: 180,
   },
   searchBar: {
     flexDirection: 'row',
