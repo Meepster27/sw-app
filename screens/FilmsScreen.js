@@ -12,8 +12,7 @@ import {
 import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
 
-const HERO_URI =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg/800px-Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg';
+const HERO_URI = 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=800';
 
 const BLURHASH = 'L03~Wt00IU~q00~q%M%M_3D%WB-;';
 

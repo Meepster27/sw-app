@@ -12,8 +12,7 @@ import {
 import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
 
-const HERO_URI =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ISS_February_2010.jpg/1280px-ISS_February_2010.jpg';
+const HERO_URI = 'https://images.unsplash.com/photo-1518364538800-6bae3c2ea0f2?w=800';
 
 const BLURHASH = 'L03~Wt00IU~q00~q%M%M_3D%WB-;';
 
