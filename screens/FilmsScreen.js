@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   ScrollView,
+  Animated,
   ActivityIndicator,
   StyleSheet,
   TextInput,
@@ -23,6 +24,7 @@ const API_URL = 'https://swapi.info/api/films';
 export default function FilmsScreen() {
   const netInfo = useNetInfo();
   const [films, setFilms] = useState([]);
+  const listAnim = useRef(new Animated.Value(0)).current;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchText, setSearchText] = useState('');
@@ -61,6 +63,16 @@ export default function FilmsScreen() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      Animated.timing(listAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [loading]);
 
   const renderItem = (item) => (
     <Swipeable
@@ -172,9 +184,26 @@ export default function FilmsScreen() {
         </View>
       </Modal>
 
-      <ScrollView contentContainerStyle={styles.list}>
-        {films.map((item) => renderItem(item))}
-      </ScrollView>
+      <Animated.View
+        style={[
+          { flex: 1 },
+          {
+            opacity: listAnim,
+            transform: [
+              {
+                translateY: listAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [40, 0],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <ScrollView contentContainerStyle={styles.list}>
+          {films.map((item) => renderItem(item))}
+        </ScrollView>
+      </Animated.View>
     </View>
   );
 }
