@@ -12,7 +12,7 @@ import {
 import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
 
-const HERO_URI = 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=800';
+const HERO_URI = 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?w=800';
 
 const BLURHASH = 'L03~Wt00IU~q00~q%M%M_3D%WB-;';
 
