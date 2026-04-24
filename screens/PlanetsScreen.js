@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
+import { useNetInfo } from '@react-native-community/netinfo';
+import NoNetworkBanner from '../components/NoNetworkBanner';
 
 const HERO_URI =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/1280px-Saturn_during_Equinox.jpg';
@@ -20,6 +22,7 @@ const BLURHASH = 'L03~Wt00IU~q00~q%M%M_3D%WB-;';
 const API_URL = 'https://swapi.info/api/planets';
 
 export default function PlanetsScreen() {
+  const netInfo = useNetInfo();
   const [planets, setPlanets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -108,6 +111,7 @@ export default function PlanetsScreen() {
 
   return (
     <View style={styles.container}>
+      {netInfo.isConnected === false && <NoNetworkBanner />}
       <Image
         style={styles.heroImage}
         source={{ uri: HERO_URI }}
