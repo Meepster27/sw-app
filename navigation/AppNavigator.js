@@ -3,13 +3,16 @@ import { Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import PlanetsScreen from '../screens/PlanetsScreen';
 import FilmsScreen from '../screens/FilmsScreen';
 import SpaceshipsScreen from '../screens/SpaceshipsScreen';
+import FilmDetailScreen from '../screens/FilmDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
+const RootStack = createNativeStackNavigator();
 
 const SCREENS = [
   { name: 'Planets', component: PlanetsScreen },
@@ -53,10 +56,21 @@ function DrawerNavigator() {
   );
 }
 
+function MainNavigator() {
+  return Platform.OS === 'ios' ? <BottomTabNavigator /> : <DrawerNavigator />;
+}
+
 export default function AppNavigator() {
   return (
     <NavigationContainer>
-      {Platform.OS === 'ios' ? <BottomTabNavigator /> : <DrawerNavigator />}
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name="Main" component={MainNavigator} />
+        <RootStack.Screen
+          name="FilmDetail"
+          component={FilmDetailScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+      </RootStack.Navigator>
     </NavigationContainer>
   );
 }

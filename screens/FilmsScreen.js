@@ -21,7 +21,7 @@ const BLURHASH = 'L03~Wt00IU~q00~q%M%M_3D%WB-;';
 
 const API_URL = 'https://swapi.info/api/films';
 
-export default function FilmsScreen() {
+export default function FilmsScreen({ navigation }) {
   const netInfo = useNetInfo();
   const [films, setFilms] = useState([]);
   const listAnim = useRef(new Animated.Value(0)).current;
@@ -30,8 +30,7 @@ export default function FilmsScreen() {
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [submittedText, setSubmittedText] = useState('');
-  const [swipeModalVisible, setSwipeModalVisible] = useState(false);
-  const [swipeItemText, setSwipeItemText] = useState('');
+
 
   const handleSearch = () => {
     if (searchText.trim() === '') return;
@@ -39,9 +38,8 @@ export default function FilmsScreen() {
     setModalVisible(true);
   };
 
-  const handleSwipe = (title) => {
-    setSwipeItemText(title);
-    setSwipeModalVisible(true);
+  const handleSwipe = (film) => {
+    navigation.navigate('FilmDetail', { film });
   };
 
   const renderRightAction = () => (
@@ -78,7 +76,7 @@ export default function FilmsScreen() {
     <Swipeable
       key={item.url}
       renderRightActions={renderRightAction}
-      onSwipeableOpen={() => handleSwipe(item.title)}
+      onSwipeableOpen={() => handleSwipe(item)}
     >
       <View style={styles.card}>
         <Text style={styles.episode}>Episode {item.episode_id}</Text>
@@ -164,25 +162,6 @@ export default function FilmsScreen() {
         </View>
       </Modal>
 
-      <Modal
-        transparent
-        animationType="fade"
-        visible={swipeModalVisible}
-        onRequestClose={() => setSwipeModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Film</Text>
-            <Text style={styles.modalBody}>{swipeItemText}</Text>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setSwipeModalVisible(false)}
-            >
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
 
       <Animated.View
         style={[
