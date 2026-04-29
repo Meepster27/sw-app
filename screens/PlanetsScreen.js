@@ -51,7 +51,9 @@ export default function PlanetsScreen() {
     </View>
   );
 
-  useEffect(() => {
+  const loadPlanets = () => {
+    setLoading(true);
+    setError(null);
     fetch(API_URL)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -60,6 +62,10 @@ export default function PlanetsScreen() {
       .then((data) => setPlanets(data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadPlanets();
   }, []);
 
   useEffect(() => {
@@ -116,7 +122,12 @@ export default function PlanetsScreen() {
   if (error) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.errorText}>Error: {error}</Text>
+        <Text style={styles.errorIcon}>??</Text>
+        <Text style={styles.errorTitle}>Failed to load planets</Text>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={loadPlanets}>
+          <Text style={styles.retryButtonText}>Try Again</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -272,9 +283,33 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
+  errorIcon: {
+    fontSize: 40,
+    marginBottom: 12,
+  },
+  errorTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
   errorText: {
     color: '#ff6b6b',
-    fontSize: 16,
+    fontSize: 14,
+    marginBottom: 24,
+    textAlign: 'center',
+    paddingHorizontal: 32,
+  },
+  retryButton: {
+    backgroundColor: '#FFE81F',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#1a1a2e',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   heroImage: {
     width: '100%',
