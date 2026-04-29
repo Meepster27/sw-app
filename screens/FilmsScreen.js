@@ -70,7 +70,7 @@ export default function FilmsScreen({ navigation }) {
         useNativeDriver: true,
       }).start();
     }
-  }, [loading]);
+  }, [loading, listAnim]);
 
   const renderItem = (item) => (
     <Swipeable

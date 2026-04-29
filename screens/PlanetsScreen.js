@@ -76,7 +76,7 @@ export default function PlanetsScreen() {
         useNativeDriver: true,
       }).start();
     }
-  }, [loading]);
+  }, [loading, listAnim]);
 
   const renderItem = (item) => (
     <Swipeable

@@ -69,7 +69,7 @@ export default function SpaceshipsScreen() {
         useNativeDriver: true,
       }).start();
     }
-  }, [loading]);
+  }, [loading, listAnim]);
 
   const renderItem = (item) => (
     <Swipeable
