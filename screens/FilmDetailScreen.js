@@ -39,6 +39,33 @@ function SectionHeader({ title }) {
   );
 }
 
+function ProducerList({ producer }) {
+  if (!producer) return null;
+  const producers = producer.split(',').map((p) => p.trim());
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>
+        {producers.length > 1 ? 'Producers' : 'Producer'}
+      </Text>
+      <View style={styles.producerList}>
+        {producers.map((p, i) => (
+          <Text key={i} style={styles.producerChip}>{p}</Text>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function formatTimestamp(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }) + '  ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
 export default function FilmDetailScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const { film } = route.params;
@@ -66,7 +93,7 @@ export default function FilmDetailScreen({ route, navigation }) {
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.backChevron}>‹</Text>
+          <Text style={styles.backChevron}>&#8249;</Text>
           <Text style={styles.backLabel}>Films</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
@@ -83,35 +110,24 @@ export default function FilmDetailScreen({ route, navigation }) {
         <View style={styles.heroBlock}>
           <View style={styles.episodePill}>
             <Text style={styles.episodePillText}>
-              EPISODE {toRoman(film.episode_id)} · {film.episode_id}
+              EPISODE {toRoman(film.episode_id)} &middot; {film.episode_id}
             </Text>
           </View>
           <Text style={styles.heroTitle}>{film.title}</Text>
-          <Text style={styles.heroSub}>
-            Directed by {film.director}
-          </Text>
+          <Text style={styles.heroSub}>Directed by {film.director}</Text>
         </View>
 
         {/* Opening crawl */}
+        <SectionHeader title="Opening Crawl" />
         <View style={styles.crawlCard}>
-          <View style={styles.crawlStars}>
-            <Text style={styles.crawlStarDot}>?</Text>
-            <Text style={styles.crawlStarDot}>?</Text>
-            <Text style={styles.crawlStarDot}>?</Text>
-          </View>
           <Text style={styles.crawlText}>{formattedCrawl}</Text>
-          <View style={styles.crawlStars}>
-            <Text style={styles.crawlStarDot}>?</Text>
-            <Text style={styles.crawlStarDot}>?</Text>
-            <Text style={styles.crawlStarDot}>?</Text>
-          </View>
         </View>
 
         {/* Production details */}
         <SectionHeader title="Production" />
         <View style={styles.infoCard}>
           <InfoRow label="Director" value={film.director} />
-          <InfoRow label="Producer" value={film.producer} />
+          <ProducerList producer={film.producer} />
           <InfoRow label="Release Date" value={formattedDate} />
         </View>
 
@@ -123,6 +139,13 @@ export default function FilmDetailScreen({ route, navigation }) {
           <StatBadge label="Starships" count={film.starships?.length} />
           <StatBadge label="Vehicles" count={film.vehicles?.length} />
           <StatBadge label="Species" count={film.species?.length} />
+        </View>
+
+        {/* Record metadata */}
+        <SectionHeader title="Record" />
+        <View style={styles.infoCard}>
+          <InfoRow label="Created" value={formatTimestamp(film.created)} />
+          <InfoRow label="Last Edited" value={formatTimestamp(film.edited)} />
         </View>
       </ScrollView>
     </View>
@@ -238,23 +261,31 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#2a2a4a',
   },
-  crawlStars: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 10,
-    gap: 8,
-  },
-  crawlStarDot: {
-    color: YELLOW,
-    fontSize: 10,
-    opacity: 0.6,
-  },
   crawlText: {
     color: '#c8c8c8',
     fontSize: 14,
     lineHeight: 24,
     fontStyle: 'italic',
     textAlign: 'justify',
+  },
+
+  /* Producer chips */
+  producerList: {
+    flex: 2,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    gap: 6,
+  },
+  producerChip: {
+    backgroundColor: DEEP,
+    color: '#ddd',
+    fontSize: 13,
+    fontWeight: '500',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
 
   /* Section header */
