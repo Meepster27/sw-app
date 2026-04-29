@@ -104,7 +104,7 @@ export default function FilmDetailScreen({ route, navigation }) {
 
       <ScrollView
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {/* Hero episode block */}
         <View style={styles.heroBlock}>
