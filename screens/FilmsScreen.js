@@ -9,7 +9,6 @@ import {
   TextInput,
   Modal,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -95,26 +94,15 @@ export default function FilmsScreen({ navigation }) {
     </View>
   );
 
-  const renderItem = (item) => {
-    if (Platform.OS === 'web') {
-      return (
-        <TouchableOpacity key={item.url} activeOpacity={0.8} onPress={() => handleSwipe(item)}>
-          {renderCardContent(item)}
-        </TouchableOpacity>
-      );
-    }
-    return (
-      <Swipeable
-        key={item.url}
-        renderRightActions={renderRightAction}
-        onSwipeableOpen={() => handleSwipe(item)}
-      >
-        <TouchableOpacity activeOpacity={0.8} onPress={() => handleSwipe(item)}>
-          {renderCardContent(item)}
-        </TouchableOpacity>
-      </Swipeable>
-    );
-  };
+  const renderItem = (item) => (
+    <Swipeable
+      key={item.url}
+      renderRightActions={renderRightAction}
+      onSwipeableOpen={() => handleSwipe(item)}
+    >
+      {renderCardContent(item)}
+    </Swipeable>
+  );
 
   if (loading) {
     return (
