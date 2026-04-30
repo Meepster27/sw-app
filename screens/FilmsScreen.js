@@ -109,9 +109,9 @@ export default function FilmsScreen({ navigation }) {
         renderRightActions={renderRightAction}
         onSwipeableOpen={() => handleSwipe(item)}
       >
-        <TouchableOpacity activeOpacity={0.8} onPress={() => handleSwipe(item)}>
+        <View>
           {renderCardContent(item)}
-        </TouchableOpacity>
+        </View>
       </Swipeable>
     );
   };
