@@ -9,6 +9,7 @@ import {
   TextInput,
   Modal,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -72,33 +73,48 @@ export default function FilmsScreen({ navigation }) {
     }
   }, [loading, listAnim]);
 
-  const renderItem = (item) => (
-    <Swipeable
-      key={item.url}
-      renderRightActions={renderRightAction}
-      onSwipeableOpen={() => handleSwipe(item)}
-    >
-      <View style={styles.card}>
-        <Text style={styles.episode}>Episode {item.episode_id}</Text>
-        <Text style={styles.name}>{item.title}</Text>
-        <View style={styles.row}>
-          <Text style={styles.label}>Director</Text>
-          <Text style={styles.value}>{item.director}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Producer</Text>
-          <Text style={styles.value}>{item.producer}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Released</Text>
-          <Text style={styles.value}>{item.release_date}</Text>
-        </View>
-        <Text style={styles.crawl} numberOfLines={3}>
-          {item.opening_crawl.replace(/\r\n/g, ' ')}
-        </Text>
+  const renderCardContent = (item) => (
+    <View style={styles.card}>
+      <Text style={styles.episode}>Episode {item.episode_id}</Text>
+      <Text style={styles.name}>{item.title}</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>Director</Text>
+        <Text style={styles.value}>{item.director}</Text>
       </View>
-    </Swipeable>
+      <View style={styles.row}>
+        <Text style={styles.label}>Producer</Text>
+        <Text style={styles.value}>{item.producer}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Released</Text>
+        <Text style={styles.value}>{item.release_date}</Text>
+      </View>
+      <Text style={styles.crawl} numberOfLines={3}>
+        {item.opening_crawl.replace(/\r\n/g, ' ')}
+      </Text>
+    </View>
   );
+
+  const renderItem = (item) => {
+    if (Platform.OS === 'web') {
+      return (
+        <TouchableOpacity key={item.url} activeOpacity={0.8} onPress={() => handleSwipe(item)}>
+          {renderCardContent(item)}
+        </TouchableOpacity>
+      );
+    }
+    return (
+      <Swipeable
+        key={item.url}
+        renderRightActions={renderRightAction}
+        onSwipeableOpen={() => handleSwipe(item)}
+      >
+        <TouchableOpacity activeOpacity={0.8} onPress={() => handleSwipe(item)}>
+          {renderCardContent(item)}
+        </TouchableOpacity>
+      </Swipeable>
+    );
+  };
 
   if (loading) {
     return (
