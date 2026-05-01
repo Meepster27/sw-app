@@ -131,17 +131,6 @@ export default function SpaceshipsScreen() {
           <Text style={styles.label}>Hyperdrive</Text>
           <Text style={styles.value}>{item.hyperdrive_rating}</Text>
         </View>
-        {item.films?.length > 0 && (
-          <View style={styles.filmsRow}>
-            {item.films.map((url) => {
-              const id = url.match(/(\d+)\/?$/)?.[1];
-              const title = filmTitleMap[id];
-              return title ? (
-                <Text key={url} style={styles.filmChip}>{title}</Text>
-              ) : null;
-            })}
-          </View>
-        )}
       </View>
     </Swipeable>
   );
