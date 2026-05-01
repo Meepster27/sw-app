@@ -29,7 +29,7 @@ export default function SpaceshipsScreen() {
   const [error, setError] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [swipeModalVisible, setSwipeModalVisible] = useState(false);
-  const [swipeItemText, setSwipeItemText] = useState('');
+  const [swipeItem, setSwipeItem] = useState(null);
   const [filmTitleMap, setFilmTitleMap] = useState({});
 
   useEffect(() => {
