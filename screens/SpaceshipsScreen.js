@@ -38,8 +38,8 @@ export default function SpaceshipsScreen() {
       .then((data) => {
         const map = {};
         data.forEach((f) => {
-          const id = String(f.episode_id);
-          map[id] = f.title;
+          const id = f.url.match(/(\d+)\/?$/)?.[1];
+          if (id) map[id] = f.title;
         });
         setFilmTitleMap(map);
       })
