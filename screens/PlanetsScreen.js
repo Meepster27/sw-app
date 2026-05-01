@@ -31,13 +31,29 @@ export default function PlanetsScreen() {
   const [searchText, setSearchText] = useState('');
   const [swipeModalVisible, setSwipeModalVisible] = useState(false);
   const [swipeItemText, setSwipeItemText] = useState('');
+  const [filmTitleMap, setFilmTitleMap] = useState({});
+
+  useEffect(() => {
+    fetch('https://swapi.info/api/films')
+      .then((res) => res.json())
+      .then((data) => {
+        const map = {};
+        data.forEach((f) => { map[f.url] = f.title; });
+        setFilmTitleMap(map);
+      })
+      .catch(() => {});
+  }, []);
 
   const filteredPlanets = planets.filter((p) => {
     const q = searchText.toLowerCase();
+    const inFilm = p.films?.some((url) =>
+      filmTitleMap[url]?.toLowerCase().includes(q)
+    );
     return (
       p.name.toLowerCase().includes(q) ||
       p.climate.toLowerCase().includes(q) ||
-      p.terrain.toLowerCase().includes(q)
+      p.terrain.toLowerCase().includes(q) ||
+      inFilm
     );
   });
 

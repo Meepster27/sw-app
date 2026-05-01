@@ -33,7 +33,8 @@ export default function FilmsScreen({ navigation }) {
     return (
       f.title.toLowerCase().includes(q) ||
       f.director.toLowerCase().includes(q) ||
-      f.producer.toLowerCase().includes(q)
+      f.producer.toLowerCase().includes(q) ||
+      f.opening_crawl.toLowerCase().includes(q)
     );
   });
 

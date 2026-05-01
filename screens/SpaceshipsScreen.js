@@ -30,14 +30,30 @@ export default function SpaceshipsScreen() {
   const [searchText, setSearchText] = useState('');
   const [swipeModalVisible, setSwipeModalVisible] = useState(false);
   const [swipeItemText, setSwipeItemText] = useState('');
+  const [filmTitleMap, setFilmTitleMap] = useState({});
+
+  useEffect(() => {
+    fetch('https://swapi.info/api/films')
+      .then((res) => res.json())
+      .then((data) => {
+        const map = {};
+        data.forEach((f) => { map[f.url] = f.title; });
+        setFilmTitleMap(map);
+      })
+      .catch(() => {});
+  }, []);
 
   const filteredShips = ships.filter((s) => {
     const q = searchText.toLowerCase();
+    const inFilm = s.films?.some((url) =>
+      filmTitleMap[url]?.toLowerCase().includes(q)
+    );
     return (
       s.name.toLowerCase().includes(q) ||
       s.model.toLowerCase().includes(q) ||
       s.starship_class.toLowerCase().includes(q) ||
-      s.manufacturer.toLowerCase().includes(q)
+      s.manufacturer.toLowerCase().includes(q) ||
+      inFilm
     );
   });
 
