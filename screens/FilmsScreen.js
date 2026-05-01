@@ -34,7 +34,7 @@ export default function FilmsScreen({ navigation }) {
       f.title.toLowerCase().includes(q) ||
       f.director.toLowerCase().includes(q) ||
       f.producer.toLowerCase().includes(q) ||
-      f.opening_crawl.toLowerCase().includes(q)
+      String(f.episode_id).includes(q)
     );
   });
 
