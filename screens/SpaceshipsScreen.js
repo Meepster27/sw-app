@@ -69,11 +69,20 @@ export default function SpaceshipsScreen() {
     setSwipeModalVisible(true);
   };
 
-  const renderRightAction = () => (
-    <View style={styles.swipeAction}>
-      <Text style={styles.swipeActionText}>View</Text>
-    </View>
-  );
+  const renderRightAction = (item) => {
+    const titles = (item.films || []).map((url) => {
+      const id = url.match(/(\d+)\/?$/)?.[1];
+      return filmTitleMap[id];
+    }).filter(Boolean);
+    return (
+      <View style={styles.swipeAction}>
+        <Text style={styles.swipeActionText}>Films</Text>
+        {titles.map((t, i) => (
+          <Text key={i} style={styles.swipeFilmText}>{t}</Text>
+        ))}
+      </View>
+    );
+  };
 
   useEffect(() => {
     fetch(API_URL)
@@ -99,7 +108,7 @@ export default function SpaceshipsScreen() {
   const renderItem = (item) => (
     <Swipeable
       key={item.url}
-      renderRightActions={renderRightAction}
+      renderRightActions={() => renderRightAction(item)}
       onSwipeableOpen={() => handleSwipe(item.name)}
     >
       <View style={styles.card}>
@@ -312,14 +321,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#e63946',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 80,
+    width: 150,
     marginBottom: 10,
     borderRadius: 8,
+    padding: 8,
   },
   swipeActionText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  swipeFilmText: {
+    color: '#ffd0d0',
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 2,
   },
   errorText: {
     color: '#ff6b6b',
