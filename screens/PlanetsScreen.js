@@ -38,16 +38,21 @@ export default function PlanetsScreen() {
       .then((res) => res.json())
       .then((data) => {
         const map = {};
-        data.forEach((f) => { map[f.url] = f.title; });
+        data.forEach((f) => {
+          const id = String(f.episode_id);
+          map[id] = f.title;
+        });
         setFilmTitleMap(map);
       })
       .catch(() => {});
   }, []);
 
+  const getFilmId = (url) => url.match(/(\d+)\/?$/)?.[1];
+
   const filteredPlanets = planets.filter((p) => {
     const q = searchText.toLowerCase();
     const inFilm = p.films?.some((url) =>
-      filmTitleMap[url]?.toLowerCase().includes(q)
+      filmTitleMap[getFilmId(url)]?.toLowerCase().includes(q)
     );
     return (
       p.name.toLowerCase().includes(q) ||

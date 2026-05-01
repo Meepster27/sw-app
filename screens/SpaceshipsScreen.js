@@ -37,16 +37,21 @@ export default function SpaceshipsScreen() {
       .then((res) => res.json())
       .then((data) => {
         const map = {};
-        data.forEach((f) => { map[f.url] = f.title; });
+        data.forEach((f) => {
+          const id = String(f.episode_id);
+          map[id] = f.title;
+        });
         setFilmTitleMap(map);
       })
       .catch(() => {});
   }, []);
 
+  const getFilmId = (url) => url.match(/(\d+)\/?$/)?.[1];
+
   const filteredShips = ships.filter((s) => {
     const q = searchText.toLowerCase();
     const inFilm = s.films?.some((url) =>
-      filmTitleMap[url]?.toLowerCase().includes(q)
+      filmTitleMap[getFilmId(url)]?.toLowerCase().includes(q)
     );
     return (
       s.name.toLowerCase().includes(q) ||
