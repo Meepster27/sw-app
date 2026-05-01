@@ -130,6 +130,17 @@ export default function PlanetsScreen() {
           <Text style={styles.label}>Population</Text>
           <Text style={styles.value}>{item.population}</Text>
         </View>
+        {item.films?.length > 0 && (
+          <View style={styles.filmsRow}>
+            {item.films.map((url) => {
+              const id = url.match(/(\d+)\/?$/)?.[1];
+              const title = filmTitleMap[id];
+              return title ? (
+                <Text key={url} style={styles.filmChip}>{title}</Text>
+              ) : null;
+            })}
+          </View>
+        )}
       </View>
     </Swipeable>
   );
@@ -277,6 +288,22 @@ const styles = StyleSheet.create({
     color: '#ccc',
     marginTop: 10,
     fontSize: 14,
+  },
+  filmsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 10,
+  },
+  filmChip: {
+    backgroundColor: '#0f3460',
+    color: '#FFE81F',
+    fontSize: 11,
+    fontWeight: '600',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   noResults: {
     color: '#888',
