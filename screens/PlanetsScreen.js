@@ -152,8 +152,6 @@ export default function PlanetsScreen() {
           placeholderTextColor="#666"
           value={searchText}
           onChangeText={setSearchText}
-          onSubmitEditing={handleSearch}
-          returnKeyType="search"
         />
         {searchText.length > 0 && (
           <TouchableOpacity style={styles.searchButton} onPress={() => setSearchText('')}>
