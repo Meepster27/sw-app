@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   TextInput,
-  Modal,
   TouchableOpacity,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -28,15 +27,17 @@ export default function FilmsScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchText, setSearchText] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [submittedText, setSubmittedText] = useState('');
 
+  const filteredFilms = films.filter((f) => {
+    const q = searchText.toLowerCase();
+    return (
+      f.title.toLowerCase().includes(q) ||
+      f.director.toLowerCase().includes(q) ||
+      f.producer.toLowerCase().includes(q)
+    );
+  });
 
-  const handleSearch = () => {
-    if (searchText.trim() === '') return;
-    setSubmittedText(searchText.trim());
-    setModalVisible(true);
-  };
+  const handleSearch = () => {};
 
   const handleSwipe = (film) => {
     navigation.navigate('FilmDetail', { film });
@@ -141,31 +142,12 @@ export default function FilmsScreen({ navigation }) {
           onSubmitEditing={handleSearch}
           returnKeyType="search"
         />
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Search</Text>
-        </TouchableOpacity>
+        {searchText.length > 0 && (
+          <TouchableOpacity style={styles.searchButton} onPress={() => setSearchText('')}>
+            <Text style={styles.searchButtonText}>Clear</Text>
+          </TouchableOpacity>
+        )}
       </View>
-
-      <Modal
-        transparent
-        animationType="fade"
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Search Term</Text>
-            <Text style={styles.modalBody}>{submittedText}</Text>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
 
       <Animated.View
         style={[
@@ -184,7 +166,11 @@ export default function FilmsScreen({ navigation }) {
         ]}
       >
         <ScrollView contentContainerStyle={styles.list}>
-          {films.map((item) => renderItem(item))}
+          {filteredFilms.length === 0 && searchText.length > 0 ? (
+            <Text style={styles.noResults}>No films match "{searchText}"</Text>
+          ) : (
+            filteredFilms.map((item) => renderItem(item))
+          )}
         </ScrollView>
       </Animated.View>
     </View>
@@ -254,6 +240,13 @@ const styles = StyleSheet.create({
     color: '#ccc',
     marginTop: 10,
     fontSize: 14,
+  },
+  noResults: {
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 15,
+    fontStyle: 'italic',
   },
   swipeAction: {
     backgroundColor: '#e63946',

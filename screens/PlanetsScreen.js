@@ -29,16 +29,19 @@ export default function PlanetsScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchText, setSearchText] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [submittedText, setSubmittedText] = useState('');
   const [swipeModalVisible, setSwipeModalVisible] = useState(false);
   const [swipeItemText, setSwipeItemText] = useState('');
 
-  const handleSearch = () => {
-    if (searchText.trim() === '') return;
-    setSubmittedText(searchText.trim());
-    setModalVisible(true);
-  };
+  const filteredPlanets = planets.filter((p) => {
+    const q = searchText.toLowerCase();
+    return (
+      p.name.toLowerCase().includes(q) ||
+      p.climate.toLowerCase().includes(q) ||
+      p.terrain.toLowerCase().includes(q)
+    );
+  });
+
+  const handleSearch = () => {};
 
   const handleSwipe = (name) => {
     setSwipeItemText(name);
@@ -152,30 +155,12 @@ export default function PlanetsScreen() {
           onSubmitEditing={handleSearch}
           returnKeyType="search"
         />
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Search</Text>
-        </TouchableOpacity>
+        {searchText.length > 0 && (
+          <TouchableOpacity style={styles.searchButton} onPress={() => setSearchText('')}>
+            <Text style={styles.searchButtonText}>Clear</Text>
+          </TouchableOpacity>
+        )}
       </View>
-
-      <Modal
-        transparent
-        animationType="fade"
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Search Term</Text>
-            <Text style={styles.modalBody}>{submittedText}</Text>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
 
       <Modal
         transparent
@@ -214,7 +199,11 @@ export default function PlanetsScreen() {
         ]}
       >
         <ScrollView contentContainerStyle={styles.list}>
-          {planets.map((item) => renderItem(item))}
+          {filteredPlanets.length === 0 && searchText.length > 0 ? (
+            <Text style={styles.noResults}>No planets match "{searchText}"</Text>
+          ) : (
+            filteredPlanets.map((item) => renderItem(item))
+          )}
         </ScrollView>
       </Animated.View>
     </View>
@@ -269,6 +258,13 @@ const styles = StyleSheet.create({
     color: '#ccc',
     marginTop: 10,
     fontSize: 14,
+  },
+  noResults: {
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 15,
+    fontStyle: 'italic',
   },
   swipeAction: {
     backgroundColor: '#e63946',
