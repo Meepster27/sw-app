@@ -32,17 +32,23 @@ export default function PlanetsScreen() {
   const [swipeModalVisible, setSwipeModalVisible] = useState(false);
   const [swipeItem, setSwipeItem] = useState(null);
   const [filmTitleMap, setFilmTitleMap] = useState({});
+  const [filmEpisodeMap, setFilmEpisodeMap] = useState({});
 
   useEffect(() => {
     fetch('https://swapi.info/api/films')
       .then((res) => res.json())
       .then((data) => {
         const map = {};
+        const epMap = {};
         data.forEach((f) => {
           const id = f.url.match(/(\d+)\/?$/)?.[1];
-          if (id) map[id] = f.title;
+          if (id) {
+            map[id] = f.title;
+            epMap[id] = String(f.episode_id);
+          }
         });
         setFilmTitleMap(map);
+        setFilmEpisodeMap(epMap);
       })
       .catch(() => {});
   }, []);
@@ -51,9 +57,13 @@ export default function PlanetsScreen() {
 
   const filteredPlanets = planets.filter((p) => {
     const q = searchText.toLowerCase();
-    const inFilm = p.films?.some((url) =>
-      filmTitleMap[getFilmId(url)]?.toLowerCase().includes(q)
-    );
+    const inFilm = p.films?.some((url) => {
+      const id = getFilmId(url);
+      return (
+        filmTitleMap[id]?.toLowerCase().includes(q) ||
+        filmEpisodeMap[id]?.includes(q)
+      );
+    });
     return (
       p.name.toLowerCase().includes(q) ||
       p.climate.toLowerCase().includes(q) ||
