@@ -64,8 +64,8 @@ export default function SpaceshipsScreen() {
 
   const handleSearch = () => {};
 
-  const handleSwipe = (name) => {
-    setSwipeItemText(name);
+  const handleSwipe = (item) => {
+    setSwipeItem(item);
     setSwipeModalVisible(true);
   };
 
@@ -109,7 +109,7 @@ export default function SpaceshipsScreen() {
     <Swipeable
       key={item.url}
       renderRightActions={() => renderRightAction(item)}
-      onSwipeableOpen={() => handleSwipe(item.name)}
+      onSwipeableOpen={() => handleSwipe(item)}
     >
       <View style={styles.card}>
         <Text style={styles.name}>{item.name}</Text>
@@ -199,8 +199,15 @@ export default function SpaceshipsScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Spaceship</Text>
-            <Text style={styles.modalBody}>{swipeItemText}</Text>
+            <Text style={styles.modalTitle}>{swipeItem?.name}</Text>
+            <Text style={styles.modalFilmsLabel}>Appears in:</Text>
+            {(swipeItem?.films || []).map((url) => {
+              const id = url.match(/(\d+)\/?$/)?.[1];
+              const title = filmTitleMap[id];
+              return title ? (
+                <Text key={url} style={styles.modalFilmItem}>{title}</Text>
+              ) : null;
+            })}
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => setSwipeModalVisible(false)}
@@ -398,6 +405,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textTransform: 'uppercase',
     letterSpacing: 1,
+  },
+  modalFilmsLabel: {
+    color: '#888',
+    fontSize: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  modalFilmItem: {
+    color: '#fff',
+    fontSize: 14,
+    marginBottom: 6,
+    textAlign: 'center',
   },
   modalBody: {
     color: '#fff',
