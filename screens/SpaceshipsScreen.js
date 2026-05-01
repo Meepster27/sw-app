@@ -76,10 +76,7 @@ export default function SpaceshipsScreen() {
     }).filter(Boolean);
     return (
       <View style={styles.swipeAction}>
-        <Text style={styles.swipeActionText}>Films</Text>
-        {titles.map((t, i) => (
-          <Text key={i} style={styles.swipeFilmText}>{t}</Text>
-        ))}
+        <Text style={styles.swipeActionText}>View</Text>
       </View>
     );
   };
